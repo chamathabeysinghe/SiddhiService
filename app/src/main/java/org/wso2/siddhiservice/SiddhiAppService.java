@@ -7,16 +7,15 @@ import android.os.RemoteException;
 import android.util.Log;
 import org.wso2.siddhi.core.SiddhiAppRuntime;
 import org.wso2.siddhi.core.SiddhiManager;
-import org.wso2.siddhi.core.event.Event;
-import org.wso2.siddhi.core.query.output.callback.QueryCallback;
-import org.wso2.siddhi.core.util.EventPrinter;
+import org.wso2.siddhiservice.output.BroadcastIntentSink;
 import org.wso2.siddhiservice.sensors.proximity.ProximitySensor;
 import org.wso2.siddhiservice.sensors.proximity.ProximitySensorSource;
 
 public class SiddhiAppService extends Service {
     private RequestController requestController=new RequestController();
-
+    public static SiddhiAppService instance;
     public SiddhiAppService() {
+        SiddhiAppService.instance=this;
     }
 
     @Override
@@ -44,9 +43,11 @@ public class SiddhiAppService extends Service {
 
         SiddhiManager siddhiManager = new SiddhiManager();
         siddhiManager.setExtension("source:proximity",ProximitySensorSource.class);
+        siddhiManager.setExtension("sink:broadcast", BroadcastIntentSink.class);
         String inStreamDefinition = "" +
                 "@app:name('foo')" +
                 "@source(type='proximity',classname='org.wso2.ceptest.MainActivity', @map(type='passThrough'))" +
+                "@sink(type='broadcast',@map(type='passThrough'))" +
                 "define stream streamProximity ( sensorName string, timestamp long, accuracy int,distance float);";
 
         String query = ("@info(name = 'query1') " +
@@ -57,18 +58,18 @@ public class SiddhiAppService extends Service {
         SiddhiAppRuntime siddhiAppRuntime = siddhiManager.createSiddhiAppRuntime(inStreamDefinition +
                 query);
 
-        siddhiAppRuntime.addCallback("query1", new QueryCallback() {
-            @Override
-            public void receive(long timeStamp, Event[] inEvents, Event[] removeEvents) {
-                EventPrinter.print(timeStamp, inEvents, removeEvents);
-                for (Event event : inEvents) {
-                    Log.e("Event changed source :",event.toString());
-                    Intent in = new Intent("EVENT_DETAILS");
-                    in.putExtra("events",event.toString());
-                    sendBroadcast(in);
-                }
-            }
-        });
+//        siddhiAppRuntime.addCallback("query1", new QueryCallback() {
+//            @Override
+//            public void receive(long timeStamp, Event[] inEvents, Event[] removeEvents) {
+//                EventPrinter.print(timeStamp, inEvents, removeEvents);
+//                for (Event event : inEvents) {
+//                    Log.e("Event changed source :",event.toString());
+//                    Intent in = new Intent("EVENT_DETAILS");
+//                    in.putExtra("events",event.toString());
+//                    sendBroadcast(in);
+//                }
+//            }
+//        });
 
         siddhiAppRuntime.start();
     }

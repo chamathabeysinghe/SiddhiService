@@ -43,8 +43,9 @@ public class ProximitySensor implements SensorEventListener {
     }
 
     public void connectSensor(SourceEventListener sourceEventListener){
-        sensorManager.registerListener(this,sensor,SensorManager.SENSOR_DELAY_NORMAL);
         this.sourceEventListener=sourceEventListener;
+
+        sensorManager.registerListener(this,sensor,SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     public void disconnectSensor(){
