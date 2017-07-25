@@ -24,7 +24,8 @@ import java.util.Map;
     examples = @Example(description = "TBD",syntax = "TBD")
 )
 public class BroadcastIntentSink extends Sink{
-
+    private static final String BROADCAST_FILTER_IDENTIFIER="identifier";
+    private String identifier;
     @Override
     public Class[] getSupportedInputEventClasses() {
         return new Class[]{Event[].class, Event.class};
@@ -38,11 +39,12 @@ public class BroadcastIntentSink extends Sink{
     @Override
     protected void init(StreamDefinition streamDefinition, OptionHolder optionHolder, ConfigReader configReader, SiddhiAppContext siddhiAppContext) {
         BroadcastIntent.init();
+        identifier=optionHolder.validateAndGetStaticValue(BROADCAST_FILTER_IDENTIFIER,"");
     }
 
     @Override
     public void publish(Object o, DynamicOptions dynamicOptions) throws ConnectionUnavailableException {
-        BroadcastIntent.getInstance().sendIntent(o);
+        BroadcastIntent.getInstance().sendIntent(o,this.identifier);
     }
 
     @Override

@@ -30,9 +30,10 @@ public class BroadcastIntent {
             init();
         return broadcastIntent;
     }
-    public void sendIntent(Object event){
-        Log.e("In Sink",event.toString());
-        Intent in = new Intent("EVENT_DETAILS");
+
+    public void sendIntent(Object event,String identifier){
+        Log.e("InSink "+identifier,event.toString());
+        Intent in = new Intent(identifier);
         in.putExtra("events",event.toString());
         context.sendBroadcast(in);
     }

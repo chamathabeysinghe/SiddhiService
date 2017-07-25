@@ -49,9 +49,7 @@ public class ProximitySensorSource extends Source {
 
     @Override
     public void connect(ConnectionCallback connectionCallback) throws ConnectionUnavailableException {
-
         ProximitySensor.getInstance().connectSensor(this.sourceEventListener);
-
     }
 
     @Override

@@ -4,18 +4,12 @@ package org.wso2.siddhiservice;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-
-import org.wso2.siddhiservice.IRequestController;
-
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private IRequestController requestController;
@@ -54,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
-
+    /*
     private Intent convertIntent(Intent implicitIntent){
         PackageManager pm=getPackageManager();
         List<ResolveInfo> resolveInfoList=pm.queryIntentServices(implicitIntent,0);
@@ -68,4 +62,5 @@ public class MainActivity extends AppCompatActivity {
         explicitIntent.setComponent(component);
         return explicitIntent;
     }
+    */
 }

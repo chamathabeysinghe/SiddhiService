@@ -2,7 +2,6 @@ package org.wso2.siddhiservice;
 
 import org.wso2.siddhi.core.SiddhiAppRuntime;
 import org.wso2.siddhi.core.SiddhiManager;
-import org.wso2.siddhi.query.compiler.SiddhiQLParser;
 import org.wso2.siddhiservice.output.BroadcastIntentSink;
 import org.wso2.siddhiservice.sensors.proximity.ProximitySensorSource;
 
@@ -11,6 +10,7 @@ import java.util.HashMap;
 /**
  * Created by chamath on 7/25/17.
  */
+
 
 public class AppManager {
 
@@ -26,6 +26,7 @@ public class AppManager {
 
     public void startApp(String inStream,String identifier){
         SiddhiAppRuntime siddhiAppRuntime=siddhiManager.createSiddhiAppRuntime(inStream);
+        siddhiAppList.put(identifier,siddhiAppRuntime);
         siddhiAppRuntime.start();
     }
 }
