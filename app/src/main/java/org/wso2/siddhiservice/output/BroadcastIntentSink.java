@@ -1,5 +1,6 @@
 package org.wso2.siddhiservice.output;
 
+import org.wso2.siddhi.annotation.Example;
 import org.wso2.siddhi.annotation.Extension;
 import org.wso2.siddhi.core.config.SiddhiAppContext;
 import org.wso2.siddhi.core.event.Event;
@@ -19,8 +20,8 @@ import java.util.Map;
 @Extension(
     name = "broadcast",
     namespace = "sink",
-    description = "no description"
-
+    description = "no description",
+    examples = @Example(description = "TBD",syntax = "TBD")
 )
 public class BroadcastIntentSink extends Sink{
 

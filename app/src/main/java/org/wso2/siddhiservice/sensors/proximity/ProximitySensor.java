@@ -11,6 +11,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import org.wso2.siddhi.core.stream.input.source.SourceEventListener;
+import org.wso2.siddhiservice.SiddhiAppService;
 
 public class ProximitySensor implements SensorEventListener {
 
@@ -30,9 +31,9 @@ public class ProximitySensor implements SensorEventListener {
             throw new Exception("Proximity Device is not supported in the device");
     }
 
-    public static ProximitySensor getInstance(Context context) throws Exception {
+    public static ProximitySensor init() throws Exception {
         if(proximitySensor==null)
-            proximitySensor=new ProximitySensor(context);
+            proximitySensor=new ProximitySensor(SiddhiAppService.instance);
         return proximitySensor;
     }
 

@@ -35,6 +35,11 @@ public class ProximitySensorSource extends Source {
         streamDefinition=StreamDefinition.id(context);
         streamDefinition.getAttributeList().addAll(sourceEventListener.getStreamDefinition().getAttributeList());
         this.optionHolder=optionHolder;
+        try {
+            ProximitySensor.init();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

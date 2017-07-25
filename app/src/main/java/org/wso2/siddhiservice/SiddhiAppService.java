@@ -33,13 +33,6 @@ public class SiddhiAppService extends Service {
 
 
     private void runSiddhiApp(){
-        Log.e("Working","Working.............");
-        try {
-            ProximitySensor.getInstance(this);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
 
         SiddhiManager siddhiManager = new SiddhiManager();
         siddhiManager.setExtension("source:proximity",ProximitySensorSource.class);
@@ -50,28 +43,11 @@ public class SiddhiAppService extends Service {
                 "@sink(type='broadcast',@map(type='passThrough'))" +
                 "define stream streamProximity ( sensorName string, timestamp long, accuracy int,distance float);";
 
-        String query = ("@info(name = 'query1') " +
-                "from streamProximity " +
-                "select *  " +
-                "insert into outputStream;");
 
-        SiddhiAppRuntime siddhiAppRuntime = siddhiManager.createSiddhiAppRuntime(inStreamDefinition +
-                query);
-
-//        siddhiAppRuntime.addCallback("query1", new QueryCallback() {
-//            @Override
-//            public void receive(long timeStamp, Event[] inEvents, Event[] removeEvents) {
-//                EventPrinter.print(timeStamp, inEvents, removeEvents);
-//                for (Event event : inEvents) {
-//                    Log.e("Event changed source :",event.toString());
-//                    Intent in = new Intent("EVENT_DETAILS");
-//                    in.putExtra("events",event.toString());
-//                    sendBroadcast(in);
-//                }
-//            }
-//        });
+        SiddhiAppRuntime siddhiAppRuntime = siddhiManager.createSiddhiAppRuntime(inStreamDefinition);
 
         siddhiAppRuntime.start();
+
     }
 
     private class RequestController extends IRequestController.Stub{
