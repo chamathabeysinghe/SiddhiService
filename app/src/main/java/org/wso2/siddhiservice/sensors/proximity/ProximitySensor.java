@@ -15,7 +15,6 @@ import org.wso2.siddhiservice.SiddhiAppService;
 
 public class ProximitySensor implements SensorEventListener {
 
-    private static ProximitySensor proximitySensor;
     private Context context;
     private SensorManager sensorManager;
     private Sensor sensor;
@@ -23,25 +22,14 @@ public class ProximitySensor implements SensorEventListener {
     private SourceEventListener sourceEventListener;
 
     private float previousValue=-1;
-    private ProximitySensor(Context context) throws Exception {
-        this.context=context;
+    public ProximitySensor() throws Exception {
+        this.context=SiddhiAppService.instance;
         sensorManager= (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
         sensor=sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
         if(sensor==null)
             throw new Exception("Proximity Device is not supported in the device");
     }
 
-    public static ProximitySensor init() throws Exception {
-        if(proximitySensor==null)
-            proximitySensor=new ProximitySensor(SiddhiAppService.instance);
-        return proximitySensor;
-    }
-
-    public static ProximitySensor getInstance(){
-        if(proximitySensor==null)
-            throw new NullPointerException("android.content.Context is not initialized");
-        return proximitySensor;
-    }
 
     public void connectSensor(SourceEventListener sourceEventListener){
         this.sourceEventListener=sourceEventListener;

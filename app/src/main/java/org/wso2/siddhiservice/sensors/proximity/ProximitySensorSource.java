@@ -26,6 +26,7 @@ public class ProximitySensorSource extends Source {
     private StreamDefinition streamDefinition;
     private OptionHolder optionHolder;
     private String context;
+    private ProximitySensor proximitySensor;
 
     @Override
     public void init(SourceEventListener sourceEventListener, OptionHolder optionHolder, String[] strings, ConfigReader configReader, SiddhiAppContext siddhiAppContext) {
@@ -36,7 +37,7 @@ public class ProximitySensorSource extends Source {
         streamDefinition.getAttributeList().addAll(sourceEventListener.getStreamDefinition().getAttributeList());
         this.optionHolder=optionHolder;
         try {
-            ProximitySensor.init();
+            proximitySensor=new ProximitySensor();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -49,12 +50,12 @@ public class ProximitySensorSource extends Source {
 
     @Override
     public void connect(ConnectionCallback connectionCallback) throws ConnectionUnavailableException {
-        ProximitySensor.getInstance().connectSensor(this.sourceEventListener);
+        proximitySensor.connectSensor(this.sourceEventListener);
     }
 
     @Override
     public void disconnect() {
-        ProximitySensor.getInstance().disconnectSensor();
+        proximitySensor.disconnectSensor();
     }
 
     @Override
@@ -63,12 +64,12 @@ public class ProximitySensorSource extends Source {
 
     @Override
     public void pause() {
-        ProximitySensor.getInstance().disconnectSensor();
+        proximitySensor.disconnectSensor();
     }
 
     @Override
     public void resume() {
-        ProximitySensor.getInstance().connectSensor(this.sourceEventListener);
+        proximitySensor.connectSensor(this.sourceEventListener);
     }
 
     @Override
