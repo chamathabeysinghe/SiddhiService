@@ -1,45 +1,18 @@
 package org.wso2.siddhiservice.sensors.temperature;
 
-
-/**
- * Created by chamath on 7/21/17.
- */
-
-import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
-import org.wso2.siddhi.core.stream.input.source.SourceEventListener;
-import org.wso2.siddhiservice.SiddhiAppService;
+import org.wso2.siddhiservice.sensors.AbstractSensor;
 
-public class TemperatureSensor implements SensorEventListener {
+public class TemperatureSensor extends AbstractSensor {
 
-    private Context context;
-    private SensorManager sensorManager;
-    private Sensor sensor;
+    protected float previousValue=-1;
 
-    private SourceEventListener sourceEventListener;
-
-    private float previousValue=-1;
     public TemperatureSensor() throws Exception {
-        this.context=SiddhiAppService.instance;
-        sensorManager= (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+        super();
         sensor=sensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
         if(sensor==null)
             throw new Exception("Proximity Device is not supported in the device");
-    }
-
-
-    public void connectSensor(SourceEventListener sourceEventListener){
-        this.sourceEventListener=sourceEventListener;
-
-        sensorManager.registerListener(this,sensor,SensorManager.SENSOR_DELAY_NORMAL);
-    }
-
-    public void disconnectSensor(){
-        sensorManager.unregisterListener(this);
-        this.sourceEventListener=null;
     }
 
     @Override
@@ -55,4 +28,5 @@ public class TemperatureSensor implements SensorEventListener {
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
     }
+
 }
