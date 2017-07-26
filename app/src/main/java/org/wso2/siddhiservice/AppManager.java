@@ -4,6 +4,7 @@ import org.wso2.siddhi.core.SiddhiAppRuntime;
 import org.wso2.siddhi.core.SiddhiManager;
 import org.wso2.siddhiservice.output.BroadcastIntentSink;
 import org.wso2.siddhiservice.sensors.proximity.ProximitySensorSource;
+import org.wso2.siddhiservice.sensors.temperature.TemperatureSensorSource;
 
 import java.util.HashMap;
 
@@ -21,12 +22,14 @@ public class AppManager {
         siddhiAppList=new HashMap<>();
         this.siddhiManager=new SiddhiManager();
         siddhiManager.setExtension("source:proximity",ProximitySensorSource.class);
+        siddhiManager.setExtension("source:temperature",TemperatureSensorSource.class);
         siddhiManager.setExtension("sink:broadcast", BroadcastIntentSink.class);
     }
 
     public void startApp(String inStream,String identifier){
         siddhiManager=new SiddhiManager();
         siddhiManager.setExtension("source:proximity",ProximitySensorSource.class);
+        siddhiManager.setExtension("source:temperature",TemperatureSensorSource.class);
         siddhiManager.setExtension("sink:broadcast", BroadcastIntentSink.class);
         SiddhiAppRuntime siddhiAppRuntime=siddhiManager.createSiddhiAppRuntime(inStream);
         siddhiAppList.put(identifier,siddhiAppRuntime);
