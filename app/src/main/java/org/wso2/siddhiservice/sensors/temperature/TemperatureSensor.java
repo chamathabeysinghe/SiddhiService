@@ -12,7 +12,7 @@ public class TemperatureSensor extends AbstractSensor {
         super();
         sensor=sensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
         if(sensor==null)
-            throw new Exception("Proximity Device is not supported in the device");
+            throw new Exception("Temperature Sensor is not supported in the device");
     }
 
     @Override

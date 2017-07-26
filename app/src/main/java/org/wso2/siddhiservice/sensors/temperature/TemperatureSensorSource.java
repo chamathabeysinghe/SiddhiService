@@ -1,6 +1,5 @@
 package org.wso2.siddhiservice.sensors.temperature;
 
-
 import org.wso2.siddhi.annotation.Example;
 import org.wso2.siddhi.annotation.Extension;
 import org.wso2.siddhi.core.config.SiddhiAppContext;
