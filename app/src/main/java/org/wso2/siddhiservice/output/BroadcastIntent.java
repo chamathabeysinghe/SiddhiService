@@ -2,13 +2,7 @@ package org.wso2.siddhiservice.output;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
-
 import org.wso2.siddhiservice.SiddhiAppService;
-
-/**
- * Created by chamath on 7/24/17.
- */
 
 public class BroadcastIntent {
     private static BroadcastIntent broadcastIntent;
@@ -32,7 +26,6 @@ public class BroadcastIntent {
     }
 
     public void sendIntent(Object event,String identifier){
-        Log.e("InSink "+identifier,event.toString());
         Intent in = new Intent(identifier);
         in.putExtra("events",event.toString());
         context.sendBroadcast(in);
