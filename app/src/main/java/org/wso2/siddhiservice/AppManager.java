@@ -25,6 +25,9 @@ public class AppManager {
     }
 
     public void startApp(String inStream,String identifier){
+        siddhiManager=new SiddhiManager();
+        siddhiManager.setExtension("source:proximity",ProximitySensorSource.class);
+        siddhiManager.setExtension("sink:broadcast", BroadcastIntentSink.class);
         SiddhiAppRuntime siddhiAppRuntime=siddhiManager.createSiddhiAppRuntime(inStream);
         siddhiAppList.put(identifier,siddhiAppRuntime);
         siddhiAppRuntime.start();

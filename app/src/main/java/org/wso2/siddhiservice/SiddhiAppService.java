@@ -4,11 +4,13 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.util.Log;
 
 public class SiddhiAppService extends Service {
     private RequestController requestController=new RequestController();
     public static SiddhiAppService instance;
     private AppManager appManager;
+    int count =0;
     public SiddhiAppService() {
         SiddhiAppService.instance=this;
         appManager=new AppManager();
@@ -16,11 +18,13 @@ public class SiddhiAppService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.e("SiddhiService","Starting");
         return START_STICKY;
     }
 
     @Override
     public IBinder onBind(Intent intent) {
+
         return requestController;
     }
 
@@ -29,6 +33,9 @@ public class SiddhiAppService extends Service {
 
         @Override
         public String startSiddhiApp(String definition, String identifier) throws RemoteException {
+            count+=1;
+            Log.e("SiddhiService","Binding  "+count);
+            Log.e("Siddhi","Creating the siddhi app");
             Runnable r= () -> {
                 appManager.startApp(definition,identifier);
             };
