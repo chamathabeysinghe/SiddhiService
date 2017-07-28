@@ -23,7 +23,7 @@ import org.wso2.siddhiservice.sensors.AbstractSensor;
 
 public class ProximitySensor extends AbstractSensor {
 
-    protected float previousValue = -1;
+    private float previousValue = -1;
 
     public ProximitySensor() throws Exception {
         super();

@@ -33,7 +33,7 @@ import java.util.Map;
 @Extension(
     name = "broadcast",
     namespace = "sink",
-    description = "no description",
+    description = "Broadcast android intents",
     examples = @Example(description = "TBD",syntax = "TBD")
 )
 public class BroadcastIntentSink extends Sink{

@@ -23,7 +23,7 @@ import org.wso2.siddhiservice.sensors.AbstractSensor;
 
 public class TemperatureSensor extends AbstractSensor {
 
-    protected float previousValue=-1;
+    private float previousValue=-275;
 
     public TemperatureSensor() throws Exception {
         super();

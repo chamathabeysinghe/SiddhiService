@@ -31,7 +31,6 @@ import org.wso2.siddhiservice.sensors.AbstractSensorSource;
         description = "Get events from the proximity sensor",
         examples = @Example(description = "TBD",syntax = "TBD")
 )
-
 public class ProximitySensorSource extends AbstractSensorSource {
 
     @Override

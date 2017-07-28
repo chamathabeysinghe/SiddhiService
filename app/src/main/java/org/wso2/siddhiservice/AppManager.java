@@ -22,7 +22,6 @@ import org.wso2.siddhi.core.SiddhiManager;
 import org.wso2.siddhiservice.output.BroadcastIntentSink;
 import org.wso2.siddhiservice.sensors.proximity.ProximitySensorSource;
 import org.wso2.siddhiservice.sensors.temperature.TemperatureSensorSource;
-
 import java.util.HashMap;
 
 
@@ -39,6 +38,11 @@ public class AppManager {
         siddhiManager.setExtension("sink:broadcast", BroadcastIntentSink.class);
     }
 
+    /**
+     * Start a new Siddhi App
+     * @param inStream Siddhi App definition
+     * @param identifier unique identifier to identify the app
+     */
     public void startApp(String inStream,String identifier){
         SiddhiAppRuntime siddhiAppRuntime=siddhiManager.createSiddhiAppRuntime(inStream);
         siddhiAppList.put(identifier,siddhiAppRuntime);
