@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
     }
 
-    public void btnBind(View view){
+    public void btnStart(View view){
         Toast.makeText(this,"Starting service",Toast.LENGTH_SHORT).show();
         Intent intent=new Intent(this.getBaseContext(),SiddhiAppService.class);
         startService(intent);

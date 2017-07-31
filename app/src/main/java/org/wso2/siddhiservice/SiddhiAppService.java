@@ -25,8 +25,8 @@ import android.os.RemoteException;
 
 public class SiddhiAppService extends Service {
 
-    private RequestController requestController=new RequestController();
     public static SiddhiAppService instance;
+    private RequestController requestController=new RequestController();
     private AppManager appManager;
 
     public SiddhiAppService() {

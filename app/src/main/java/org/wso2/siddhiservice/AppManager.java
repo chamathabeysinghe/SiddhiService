@@ -17,8 +17,6 @@
  */
 package org.wso2.siddhiservice;
 
-import android.util.Log;
-
 import org.wso2.siddhi.core.SiddhiAppRuntime;
 import org.wso2.siddhi.core.SiddhiManager;
 import org.wso2.siddhiservice.output.BroadcastIntentSink;
@@ -48,12 +46,19 @@ public class AppManager {
     public void startApp(String inStream,String identifier){
         SiddhiAppRuntime siddhiAppRuntime=siddhiManager.createSiddhiAppRuntime(inStream);
         synchronized (this){
+            if(siddhiAppList.containsKey(identifier)){  //what to do?
+                siddhiAppList.get(identifier).shutdown();
+            }
             siddhiAppList.put(identifier,siddhiAppRuntime);
         }
 
         siddhiAppRuntime.start();
     }
 
+    /**
+     * Shutdown a running Siddhi App
+     * @param identifier unique identifier to identify the app (as previously provided when starting the app)
+     */
     public void stopApp(String identifier){
         SiddhiAppRuntime siddhiAppRuntime;
         synchronized (this){
