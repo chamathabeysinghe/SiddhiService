@@ -17,6 +17,8 @@
  */
 package org.wso2.siddhiservice;
 
+import android.util.Log;
+
 import org.wso2.siddhi.core.SiddhiAppRuntime;
 import org.wso2.siddhi.core.SiddhiManager;
 import org.wso2.siddhiservice.output.BroadcastIntentSink;
@@ -28,7 +30,7 @@ import java.util.HashMap;
 public class AppManager {
 
     private SiddhiManager siddhiManager;
-    private HashMap<String,SiddhiAppRuntime> siddhiAppList;
+    private volatile HashMap<String,SiddhiAppRuntime> siddhiAppList;
 
     public AppManager(){
         siddhiAppList=new HashMap<>();
@@ -45,7 +47,19 @@ public class AppManager {
      */
     public void startApp(String inStream,String identifier){
         SiddhiAppRuntime siddhiAppRuntime=siddhiManager.createSiddhiAppRuntime(inStream);
-        siddhiAppList.put(identifier,siddhiAppRuntime);
+        synchronized (this){
+            siddhiAppList.put(identifier,siddhiAppRuntime);
+        }
+
         siddhiAppRuntime.start();
+    }
+
+    public void stopApp(String identifier){
+        SiddhiAppRuntime siddhiAppRuntime;
+        synchronized (this){
+            siddhiAppRuntime=siddhiAppList.get(identifier);
+        }
+
+        siddhiAppRuntime.shutdown();
     }
 }

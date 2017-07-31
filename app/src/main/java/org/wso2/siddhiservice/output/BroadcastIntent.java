@@ -19,7 +19,6 @@ package org.wso2.siddhiservice.output;
 
 import android.content.Context;
 import android.content.Intent;
-
 import org.wso2.siddhiservice.SiddhiAppService;
 
 public class BroadcastIntent {

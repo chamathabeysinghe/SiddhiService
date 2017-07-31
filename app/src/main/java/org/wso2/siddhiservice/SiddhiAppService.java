@@ -56,5 +56,11 @@ public class SiddhiAppService extends Service {
             t.start();
             return "App Launched";
         }
+
+        @Override
+        public String stopSiddhiApp(String identifier) throws RemoteException {
+            appManager.stopApp(identifier);
+            return "App Stopped";
+        }
     }
 }
