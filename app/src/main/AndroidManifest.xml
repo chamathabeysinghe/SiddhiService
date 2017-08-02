@@ -26,8 +26,6 @@
                 <action android:name="org.wso2.siddhiappservice.AIDL"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
-
         </service>
     </application>
-
 </manifest>

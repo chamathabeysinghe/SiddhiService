@@ -27,6 +27,8 @@ import java.util.HashMap;
 
 public class AppManager {
 
+    //SiddhiAppManager
+
     private SiddhiManager siddhiManager;
     private volatile HashMap<String,SiddhiAppRuntime> siddhiAppList;
 

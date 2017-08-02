@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.Intent;
 import org.wso2.siddhiservice.SiddhiAppService;
 
+//remove this class
 public class BroadcastIntent {
     private static BroadcastIntent broadcastIntent;
     private Context context;
@@ -44,7 +45,7 @@ public class BroadcastIntent {
 
     public void sendIntent(Object event,String identifier){
         Intent in = new Intent(identifier);
-        in.putExtra("events",event.toString());
+        in.putExtra("events",event.toString());  //key:payload & event object
         context.sendBroadcast(in);
 
     }

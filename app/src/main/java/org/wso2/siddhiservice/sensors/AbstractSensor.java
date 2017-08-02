@@ -36,6 +36,8 @@ public abstract class AbstractSensor implements SensorEventListener {
     public AbstractSensor() throws Exception {
         this.context= SiddhiAppService.instance;
         sensorManager= (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+        //get service dynamically
+
     }
 
 

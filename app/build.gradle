@@ -48,7 +48,7 @@ dependencies {
     compile files('libs/quartz.jar')
     compile files('libs/siddhi-annotations-4.0.0-M13-SNAPSHOT.jar')
     compile files('libs/siddhi-core-4.0.0-M18-SNAPSHOT.jar')
-    compile files('libs/siddhi-execution-math-4.0.2-SNAPSHOT.jar')
     compile files('libs/siddhi-query-api-4.0.0-M13-SNAPSHOT.jar')
     compile files('libs/siddhi-query-compiler-4.0.0-M13-SNAPSHOT.jar')
+
 }

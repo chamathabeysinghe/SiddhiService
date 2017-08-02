@@ -37,7 +37,7 @@ public class ProximitySensor extends AbstractSensor {
         if (event.values[0] == previousValue)
             return;
         previousValue = event.values[0];
-        Object eventOutput[] = {event.sensor.getName(), event.timestamp, event.accuracy, event.values[0]};
+        Object eventOutput[] = {event.sensor.getName(), event.timestamp, event.accuracy, event.values[0]}; //use hashmap
         this.sourceEventListener.onEvent(eventOutput, null);
     }
 

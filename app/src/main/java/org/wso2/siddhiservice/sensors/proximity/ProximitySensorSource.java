@@ -39,7 +39,7 @@ public class ProximitySensorSource extends AbstractSensorSource {
         try {
             androidSensor=new ProximitySensor();
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace();//remove this
         }
     }
 }
