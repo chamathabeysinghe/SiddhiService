@@ -21,25 +21,23 @@ import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+
 import org.wso2.siddhi.core.stream.input.source.SourceEventListener;
-import org.wso2.siddhiservice.SiddhiAppService;
+import org.wso2.siddhiandroidlibrary.SiddhiAppService;
 
 
 public abstract class AbstractSensor implements SensorEventListener {
 
-    protected Context context;
+
     protected SensorManager sensorManager;
     protected Sensor sensor;
-
     protected SourceEventListener sourceEventListener;
 
     public AbstractSensor() throws Exception {
-        this.context= SiddhiAppService.instance;
-        sensorManager= (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
         //get service dynamically
+        sensorManager= (SensorManager) (SiddhiAppService.instance.getSystemService(Context.SENSOR_SERVICE));
 
     }
-
 
     public void connectSensor(SourceEventListener sourceEventListener){
         this.sourceEventListener=sourceEventListener;
@@ -50,7 +48,5 @@ public abstract class AbstractSensor implements SensorEventListener {
         sensorManager.unregisterListener(this);
         this.sourceEventListener=null;
     }
-
-
 
 }

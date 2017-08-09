@@ -19,7 +19,7 @@ package org.wso2.siddhiservice.output;
 
 import android.content.Context;
 import android.content.Intent;
-import org.wso2.siddhiservice.SiddhiAppService;
+import org.wso2.siddhiandroidlibrary.SiddhiAppService;
 
 //remove this class
 public class BroadcastIntent {

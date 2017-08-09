@@ -1,17 +1,13 @@
-apply plugin: 'com.android.application'
+apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 26
     buildToolsVersion "26.0.0"
     defaultConfig {
-        applicationId "org.wso2.siddhiservice"
         minSdkVersion 18
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
-        jackOptions {
-            enabled true
-        }
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -29,6 +25,7 @@ android {
     packagingOptions {
         exclude 'META-INF/LICENSE'
         exclude 'META-INF/DEPENDENCIES'
+        merge 'META-INF/annotations/org.wso2.siddhi.annotation.Extension'
     }
 }
 
@@ -40,15 +37,6 @@ dependencies {
     compile 'com.android.support:appcompat-v7:26.+'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
-    compile files('libs/antlr4-runtime-4.5.1.jar')
-    compile files('libs/com.google.guava_1.6.0.jar')
-    compile files('libs/disruptor-3.3.2.wso2v2.jar')
-    compile files('libs/log4j-1.2.17.wso2v1.jar')
-    compile files('libs/org.osgi.core-4.3.0.jar')
-    compile files('libs/quartz.jar')
-    compile files('libs/siddhi-annotations-4.0.0-M13-SNAPSHOT.jar')
-    compile files('libs/siddhi-core-4.0.0-M18-SNAPSHOT.jar')
-    compile files('libs/siddhi-query-api-4.0.0-M13-SNAPSHOT.jar')
-    compile files('libs/siddhi-query-compiler-4.0.0-M13-SNAPSHOT.jar')
-
+    compile 'org.wso2.siddhi:siddhi-core:4.0.0-M18'
+    compile files('libs/siddhiandroidlibrary.jar')
 }
