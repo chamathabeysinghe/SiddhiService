@@ -15,21 +15,42 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.siddhiservice.sensors.temperature;
+package org.wso2.siddhiservice.sensors;
 
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
-import org.wso2.siddhiservice.sensors.AbstractSensor;
+import android.util.Log;
 
-public class TemperatureSensor extends AbstractSensor {
+import org.wso2.siddhi.annotation.Example;
+import org.wso2.siddhi.annotation.Extension;
+import org.wso2.siddhi.core.config.SiddhiAppContext;
+import org.wso2.siddhi.core.stream.input.source.SourceEventListener;
+import org.wso2.siddhi.core.util.config.ConfigReader;
+import org.wso2.siddhi.core.util.transport.OptionHolder;
+
+@Extension(
+        name = "temperature",
+        namespace="source",
+        description = "Get events from the ambient temperature sensor",
+        examples = @Example(description = "TBD",syntax = "TBD")
+)
+public class TemperatureSensorSource extends AbstractSensorSource {
 
     private float previousValue=-275;
+    @Override
+    public void init(SourceEventListener sourceEventListener, OptionHolder optionHolder, String[] strings, ConfigReader configReader, SiddhiAppContext siddhiAppContext) {
+        super.init(sourceEventListener,optionHolder,strings,configReader,siddhiAppContext);
 
-    public TemperatureSensor() throws Exception {
-        super();
         sensor=sensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
         if(sensor==null)
-            throw new Exception("Temperature Sensor is not supported in the device");
+            Log.e("Siddhi Source Error","Light Sensor is not supported in the device. Stream "+sourceEventListener.getStreamDefinition().getId());
+
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+        sensor=null;
     }
 
     @Override
@@ -38,12 +59,13 @@ public class TemperatureSensor extends AbstractSensor {
             return;
         previousValue=event.values[0];
         Object eventOutput[] ={event.sensor.getName(),event.timestamp,event.accuracy,event.values[0]};
+
+
         this.sourceEventListener.onEvent(eventOutput,null);
     }
 
     @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+    public void onAccuracyChanged(Sensor sensor, int i) {
 
     }
-
 }

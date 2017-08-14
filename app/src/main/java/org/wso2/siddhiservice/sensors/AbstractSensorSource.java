@@ -17,6 +17,12 @@
  */
 package org.wso2.siddhiservice.sensors;
 
+import android.content.Context;
+import android.hardware.Sensor;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.util.Log;
+
 import org.wso2.siddhi.core.config.SiddhiAppContext;
 import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.core.exception.ConnectionUnavailableException;
@@ -25,10 +31,12 @@ import org.wso2.siddhi.core.stream.input.source.SourceEventListener;
 import org.wso2.siddhi.core.util.config.ConfigReader;
 import org.wso2.siddhi.core.util.transport.OptionHolder;
 import org.wso2.siddhi.query.api.definition.StreamDefinition;
+import org.wso2.siddhiandroidlibrary.SiddhiAppService;
+
 import java.util.Map;
 
 
-public abstract class AbstractSensorSource extends Source{
+public abstract class AbstractSensorSource extends Source implements SensorEventListener{
 
     protected String CONTEXT="context";
     protected SourceEventListener sourceEventListener;
@@ -36,6 +44,9 @@ public abstract class AbstractSensorSource extends Source{
     protected OptionHolder optionHolder;
     protected String context;
     protected AbstractSensor androidSensor;
+
+    protected SensorManager sensorManager;
+    protected Sensor sensor;
 
     @Override
     public void init(SourceEventListener sourceEventListener, OptionHolder optionHolder, String[] strings, ConfigReader configReader, SiddhiAppContext siddhiAppContext) {
@@ -45,6 +56,8 @@ public abstract class AbstractSensorSource extends Source{
         streamDefinition=StreamDefinition.id(context);
         streamDefinition.getAttributeList().addAll(sourceEventListener.getStreamDefinition().getAttributeList());
         this.optionHolder=optionHolder;
+        sensorManager= (SensorManager) (SiddhiAppService.instance.getSystemService(Context.SENSOR_SERVICE));
+
     }
 
     @Override
@@ -54,26 +67,31 @@ public abstract class AbstractSensorSource extends Source{
 
     @Override
     public void connect(Source.ConnectionCallback connectionCallback) throws ConnectionUnavailableException {
-        androidSensor.connectSensor(this.sourceEventListener);
+        if(sensor==null){
+            Log.e("Sensor Error","Android sensor is not initialized in the Source.Sensor might be not supported in the device. Stream : "+sourceEventListener.getStreamDefinition().getId());
+            throw new ConnectionUnavailableException("Android sensor is not initialized in the Source.Sensor might be not supported in the device. Stream : "+sourceEventListener.getStreamDefinition().getId());
+        }
+        sensorManager.registerListener(this,sensor,SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     @Override
     public void disconnect() {
-        androidSensor.disconnectSensor();
+        sensorManager.unregisterListener(this);
     }
 
     @Override
     public void destroy() {
+        sensorManager=null;
     }
 
     @Override
     public void pause() {
-        androidSensor.disconnectSensor();
+        sensorManager.unregisterListener(this);
     }
 
     @Override
     public void resume() {
-        androidSensor.connectSensor(this.sourceEventListener);
+        sensorManager.registerListener(this,sensor,SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     @Override
