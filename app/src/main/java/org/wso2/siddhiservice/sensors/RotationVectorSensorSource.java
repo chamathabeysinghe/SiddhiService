@@ -1,6 +1,7 @@
 package org.wso2.siddhiservice.sensors;
+
 /*
-Not tested
+Not tested. Not supported in the device
  */
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -13,24 +14,25 @@ import org.wso2.siddhi.core.util.config.ConfigReader;
 import org.wso2.siddhi.core.util.transport.OptionHolder;
 
 @Extension(
-        name = "gyroscope",
+        name = "rotation_vector",
         namespace="source",
         description = "Get events from the light sensor",
         examples = @Example(description = "TBD",syntax = "TBD")
 )
-public class GyroscopeSensorSource extends AbstractSensorSource {
+public class RotationVectorSensorSource extends AbstractSensorSource {
 
     private float previousValueX=-1;
     private float previousValueY=-1;
     private float previousValueZ=-1;
+    private float previousValueScalar=-1;
 
     @Override
     public void init(SourceEventListener sourceEventListener, OptionHolder optionHolder, String[] strings, ConfigReader configReader, SiddhiAppContext siddhiAppContext) {
         super.init(sourceEventListener,optionHolder,strings,configReader,siddhiAppContext);
 
-        sensor=sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+        sensor=sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
         if(sensor==null)
-            Log.e("Siddhi Source Error","Gyroscope Sensor is not supported in the device. Stream "+sourceEventListener.getStreamDefinition().getId());
+            Log.e("Siddhi Source Error","Rotation Vector Sensor is not supported in the device. Stream "+sourceEventListener.getStreamDefinition().getId());
     }
 
     @Override
@@ -41,14 +43,14 @@ public class GyroscopeSensorSource extends AbstractSensorSource {
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        if(event.values[0]==previousValueX && event.values[1]==previousValueY && event.values[2]==previousValueZ)
+        if(event.values[0]==previousValueX && event.values[1]==previousValueY && event.values[2]==previousValueZ && event.values[3]==previousValueScalar)
             return;
         previousValueX=event.values[0];
         previousValueY=event.values[1];
         previousValueZ=event.values[2];
+        previousValueScalar=event.values[3];
 
-
-        Object eventOutput[] ={event.sensor.getName(),event.timestamp,event.accuracy,event.values[0],event.values[1],event.values[2]};
+        Object eventOutput[] ={event.sensor.getName(),event.timestamp,event.accuracy,event.values[0],event.values[1],event.values[2],event.values[3]};
 
 
         this.sourceEventListener.onEvent(eventOutput,null);

@@ -1,7 +1,9 @@
 package org.wso2.siddhiservice.sensors;
+
 /*
-Not tested
+Not tested. Not supported in the device
  */
+
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.util.Log;
@@ -13,12 +15,12 @@ import org.wso2.siddhi.core.util.config.ConfigReader;
 import org.wso2.siddhi.core.util.transport.OptionHolder;
 
 @Extension(
-        name = "gyroscope",
+        name = "linear_accelerometer",
         namespace="source",
         description = "Get events from the light sensor",
         examples = @Example(description = "TBD",syntax = "TBD")
 )
-public class GyroscopeSensorSource extends AbstractSensorSource {
+public class LinearAccelerationSensorSource extends AbstractSensorSource {
 
     private float previousValueX=-1;
     private float previousValueY=-1;
@@ -28,9 +30,9 @@ public class GyroscopeSensorSource extends AbstractSensorSource {
     public void init(SourceEventListener sourceEventListener, OptionHolder optionHolder, String[] strings, ConfigReader configReader, SiddhiAppContext siddhiAppContext) {
         super.init(sourceEventListener,optionHolder,strings,configReader,siddhiAppContext);
 
-        sensor=sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+        sensor=sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
         if(sensor==null)
-            Log.e("Siddhi Source Error","Gyroscope Sensor is not supported in the device. Stream "+sourceEventListener.getStreamDefinition().getId());
+            Log.e("Siddhi Source Error","Linear Accelerometer Sensor is not supported in the device. Stream "+sourceEventListener.getStreamDefinition().getId());
     }
 
     @Override
