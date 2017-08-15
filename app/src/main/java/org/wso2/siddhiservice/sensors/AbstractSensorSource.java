@@ -43,7 +43,6 @@ public abstract class AbstractSensorSource extends Source implements SensorEvent
     protected StreamDefinition streamDefinition;
     protected OptionHolder optionHolder;
     protected String context;
-    protected AbstractSensor androidSensor;
 
     protected SensorManager sensorManager;
     protected Sensor sensor;

@@ -45,9 +45,7 @@ public class GeomagneticRotationSensorSource extends AbstractSensorSource {
         previousValueY=event.values[1];
         previousValueZ=event.values[2];
 
-
         Object eventOutput[] ={event.sensor.getName(),event.timestamp,event.accuracy,event.values[0],event.values[1],event.values[2]};
-
 
         this.sourceEventListener.onEvent(eventOutput,null);
 
