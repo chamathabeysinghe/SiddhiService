@@ -61,7 +61,7 @@ public abstract class AbstractSensorSource extends Source implements SensorEvent
 
     @Override
     public Class[] getOutputEventClasses() {
-        return new Class[]{Event[].class, Event.class};
+        return new Class[0];
     }
 
     @Override

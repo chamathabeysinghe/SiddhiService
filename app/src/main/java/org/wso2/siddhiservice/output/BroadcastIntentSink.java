@@ -45,7 +45,6 @@ public class BroadcastIntentSink extends Sink{
     private static final String BROADCAST_FILTER_IDENTIFIER="identifier";
     private String identifier;
 
-    private static BroadcastIntent broadcastIntent;
     private Context context;
 
     @Override

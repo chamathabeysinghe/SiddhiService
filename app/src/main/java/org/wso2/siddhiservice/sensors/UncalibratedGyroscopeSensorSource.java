@@ -14,6 +14,9 @@ import org.wso2.siddhi.core.stream.input.source.SourceEventListener;
 import org.wso2.siddhi.core.util.config.ConfigReader;
 import org.wso2.siddhi.core.util.transport.OptionHolder;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Extension(
         name = "uncalibrated_gyroscope",
         namespace="source",
@@ -57,11 +60,23 @@ public class UncalibratedGyroscopeSensorSource extends AbstractSensorSource {
         previousDriftY=event.values[4];
         previousDriftZ=event.values[5];
 
-        Object eventOutput[] ={event.sensor.getName(),event.timestamp,event.accuracy,event.values[0],event.values[1],event.values[2],
-        event.values[3],event.values[4],event.values[5]};
+//        Object eventOutput[] ={event.sensor.getName(),event.timestamp,event.accuracy,event.values[0],event.values[1],event.values[2],
+//        event.values[3],event.values[4],event.values[5]};
 
 
-        this.sourceEventListener.onEvent(eventOutput,null);
+        Map<String,Object> output = new HashMap<>();
+        output.put("sensor",event.sensor.getName());
+        output.put("timestamp",event.timestamp);
+        output.put("accuracy",event.accuracy);
+        output.put("valueX",event.values[0]);
+        output.put("valueY",event.values[1]);
+        output.put("valueZ",event.values[2]);
+        output.put("driftX",event.values[3]);
+        output.put("driftY",event.values[4]);
+        output.put("driftZ",event.values[5]);
+
+        this.sourceEventListener.onEvent(output,null);
+
 
     }
 

@@ -1,11 +1,16 @@
 package org.wso2.siddhiservice.output;
 
+import android.annotation.TargetApi;
+import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.app.TaskStackBuilder;
 import android.content.Context;
-import android.content.Intent;
+import android.content.ContextWrapper;
+import android.graphics.Color;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
+import android.text.TextUtils;
 
 import org.wso2.siddhi.annotation.Example;
 import org.wso2.siddhi.annotation.Extension;
@@ -18,11 +23,7 @@ import org.wso2.siddhi.core.util.transport.DynamicOptions;
 import org.wso2.siddhi.core.util.transport.OptionHolder;
 import org.wso2.siddhi.query.api.definition.StreamDefinition;
 import org.wso2.siddhiandroidlibrary.SiddhiAppService;
-import org.wso2.siddhiservice.R;
-
-
 import java.util.Map;
-
 
 @Extension(
         name = "notification",
@@ -30,9 +31,10 @@ import java.util.Map;
         description = "Show android notifications",
         examples = @Example(description = "TBD",syntax = "TBD")
 )
+
 public class NotificationSink extends Sink{
     private String identifier;
-
+    private NotificationUtils mNotificationUtils;
     @Override
     public Class[] getSupportedInputEventClasses() {
         return new Class[]{Event[].class, Event.class};
@@ -45,12 +47,12 @@ public class NotificationSink extends Sink{
 
     @Override
     protected void init(StreamDefinition streamDefinition, OptionHolder optionHolder, ConfigReader configReader, SiddhiAppContext siddhiAppContext) {
-
+        mNotificationUtils = new NotificationUtils(SiddhiAppService.instance);
     }
 
     @Override
     public void publish(Object o, DynamicOptions dynamicOptions) throws ConnectionUnavailableException {
-        sendNotification();
+        sendNotification(o);
     }
 
     @Override
@@ -78,14 +80,69 @@ public class NotificationSink extends Sink{
 
     }
 
-    private void sendNotification() {
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(SiddhiAppService.instance)
-                        .setContentTitle("My notification")
-                        .setContentText("Hello World!");
+    private void sendNotification(Object event) {
 
-        NotificationManager mNotificationManager =
-                (NotificationManager) SiddhiAppService.instance.getSystemService(Context.NOTIFICATION_SERVICE);
 
-        mNotificationManager.notify(1, mBuilder.build());
+        if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.O){
+            Notification.Builder nb = mNotificationUtils.getSiddhiChannelNotification("Event",event.toString());
+            mNotificationUtils.getManager().notify(101,nb.build());
+        }
+        else{
+            Notification n  = new NotificationCompat.Builder(SiddhiAppService.instance)
+                    .setContentTitle("Event")
+                    .setContentText(event.toString())
+                    .setSmallIcon(SiddhiAppService.getAppIcon())
+                    .build();
+            mNotificationUtils.getManager().notify(102, n);
+        }
+
     }
+}
+
+class NotificationUtils extends ContextWrapper {
+
+    private NotificationManager mManager;
+    public static final String SIDDHI_CHANNEL_ID = "org.wso2.SIDDHI";
+    public static final String SIDDHI_CHANNEL_NAME = "SIDDHI CHANNEL";
+
+    public NotificationUtils(Context base) {
+        super(base);
+        createChannels();
+    }
+
+    @TargetApi(Build.VERSION_CODES.O)
+    public void createChannels() {
+
+        // create android channel
+        NotificationChannel androidChannel = new NotificationChannel(SIDDHI_CHANNEL_ID,SIDDHI_CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
+        // Sets whether notifications posted to this channel should display notification lights
+        androidChannel.enableLights(true);
+        // Sets whether notification posted to this channel should vibrate.
+        androidChannel.enableVibration(true);
+        // Sets the notification light color for notifications posted to this channel
+        androidChannel.setLightColor(Color.GREEN);
+        // Sets whether notifications posted to this channel appear on the lockscreen or not
+        androidChannel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+
+        getManager().createNotificationChannel(androidChannel);
+
+    }
+
+    public NotificationManager getManager() {
+        if (mManager == null) {
+            mManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        }
+        return mManager;
+    }
+
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public Notification.Builder getSiddhiChannelNotification(String title, String body) {
+        return new Notification.Builder(getApplicationContext(), SIDDHI_CHANNEL_ID)
+                .setContentTitle(title)
+                .setContentText(body)
+                .setSmallIcon(android.R.drawable.stat_notify_more)
+                .setAutoCancel(true);
+    }
+
 }

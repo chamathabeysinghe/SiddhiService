@@ -14,6 +14,9 @@ import org.wso2.siddhi.core.stream.input.source.SourceEventListener;
 import org.wso2.siddhi.core.util.config.ConfigReader;
 import org.wso2.siddhi.core.util.transport.OptionHolder;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Extension(
         name = "linear_accelerometer",
         namespace="source",
@@ -50,10 +53,18 @@ public class LinearAccelerationSensorSource extends AbstractSensorSource {
         previousValueZ=event.values[2];
 
 
-        Object eventOutput[] ={event.sensor.getName(),event.timestamp,event.accuracy,event.values[0],event.values[1],event.values[2]};
+        //        Object eventOutput[] ={event.sensor.getName(),event.timestamp,event.accuracy,event.values[0],event.values[1],event.values[2]};
 
+        Map<String,Object> output = new HashMap<>();
+        output.put("sensor",event.sensor.getName());
+        output.put("timestamp",event.timestamp);
+        output.put("accuracy",event.accuracy);
+        output.put("valueX",event.values[0]);
+        output.put("valueY",event.values[1]);
+        output.put("valueZ",event.values[2]);
 
-        this.sourceEventListener.onEvent(eventOutput,null);
+        this.sourceEventListener.onEvent(output,null);
+
 
     }
 

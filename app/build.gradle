@@ -38,8 +38,11 @@ dependencies {
     compile 'com.android.support:appcompat-v7:26.+'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
-    compile 'org.wso2.siddhi:siddhi-core:4.0.0-M18'
-    compile 'com.github.chamathabeysinghe:SiddhiAndroidPlatform:v0.01'
+    //    compile 'org.wso2.siddhi:siddhi-core:4.0.0-M18'
+    //    compile 'com.github.chamathabeysinghe:siddhi:change_payload-SNAPSHOT'
+//    compile 'com.github.chamathabeysinghe:SiddhiAndroidPlatform:v0.11'
+    compile 'com.github.chamathabeysinghe:SiddhiAndroidPlatform:v0.12'
+//    compile 'com.github.chamathabeysinghe:SiddhiBeta:change_payload-SNAPSHOT'
 }
 
 task clearJar(type: Delete){

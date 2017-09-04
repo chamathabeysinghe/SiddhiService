@@ -11,6 +11,9 @@ import org.wso2.siddhi.core.stream.input.source.SourceEventListener;
 import org.wso2.siddhi.core.util.config.ConfigReader;
 import org.wso2.siddhi.core.util.transport.OptionHolder;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Extension(
         name = "humidity",
         namespace="source",
@@ -41,10 +44,17 @@ public class HumiditySensorSource extends AbstractSensorSource {
             return;
         previousValue=event.values[0];
 
-        Object eventOutput[] ={event.sensor.getName(),event.timestamp,event.accuracy,event.values[0]};
+//        Object eventOutput[] ={event.sensor.getName(),event.timestamp,event.accuracy,event.values[0]};
 
+        Map<String,Object> output = new HashMap<>();
+        output.put("sensor",event.sensor.getName());
+        output.put("timestamp",event.timestamp);
+        output.put("accuracy",event.accuracy);
+        output.put("value",event.values[0]);
 
-        this.sourceEventListener.onEvent(eventOutput,null);
+        this.sourceEventListener.onEvent(output,null);
+
+        this.sourceEventListener.onEvent(output,null);
 
     }
 
