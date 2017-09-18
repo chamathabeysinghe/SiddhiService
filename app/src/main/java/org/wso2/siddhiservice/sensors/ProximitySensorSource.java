@@ -69,7 +69,7 @@ public class ProximitySensorSource extends AbstractSensorSource {
         output.put("timestamp",event.timestamp);
         output.put("accuracy",event.accuracy);
         output.put("value",event.values[0]);
-
+        Log.e("Proximity","Value (@Siddhi) :  "+event.values[0]);
         this.sourceEventListener.onEvent(output,null);
     }
 

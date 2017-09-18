@@ -19,6 +19,7 @@ package org.wso2.siddhiservice.output;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import org.wso2.siddhi.annotation.Example;
 import org.wso2.siddhi.annotation.Extension;
@@ -68,6 +69,7 @@ public class BroadcastIntentSink extends Sink{
         Intent in = new Intent(identifier);
         in.putExtra("events",o.toString());  //key:payload & event object
         context.sendBroadcast(in);
+        Log.e("Events",o.toString());
     }
 
     @Override

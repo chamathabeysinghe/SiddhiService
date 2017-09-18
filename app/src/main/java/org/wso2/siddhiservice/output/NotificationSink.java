@@ -113,17 +113,11 @@ class NotificationUtils extends ContextWrapper {
     @TargetApi(Build.VERSION_CODES.O)
     public void createChannels() {
 
-        // create android channel
         NotificationChannel androidChannel = new NotificationChannel(SIDDHI_CHANNEL_ID,SIDDHI_CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
-        // Sets whether notifications posted to this channel should display notification lights
         androidChannel.enableLights(true);
-        // Sets whether notification posted to this channel should vibrate.
         androidChannel.enableVibration(true);
-        // Sets the notification light color for notifications posted to this channel
         androidChannel.setLightColor(Color.GREEN);
-        // Sets whether notifications posted to this channel appear on the lockscreen or not
         androidChannel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
-
         getManager().createNotificationChannel(androidChannel);
 
     }

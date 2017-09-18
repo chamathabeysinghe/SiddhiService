@@ -43,6 +43,9 @@ dependencies {
 //    compile 'com.github.chamathabeysinghe:SiddhiAndroidPlatform:v0.11'
     compile 'com.github.chamathabeysinghe:SiddhiAndroidPlatform:v0.12'
 //    compile 'com.github.chamathabeysinghe:SiddhiBeta:change_payload-SNAPSHOT'
+
+    compile 'com.google.android.gms:play-services:11.0.4'
+    compile 'com.google.android.gms:play-services-location:11.0.4'
 }
 
 task clearJar(type: Delete){
