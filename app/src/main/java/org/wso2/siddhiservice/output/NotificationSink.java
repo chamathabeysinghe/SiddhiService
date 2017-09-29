@@ -10,12 +10,10 @@ import android.graphics.Color;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
-import android.text.TextUtils;
 
 import org.wso2.siddhi.annotation.Example;
 import org.wso2.siddhi.annotation.Extension;
 import org.wso2.siddhi.core.config.SiddhiAppContext;
-import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.core.exception.ConnectionUnavailableException;
 import org.wso2.siddhi.core.stream.output.sink.Sink;
 import org.wso2.siddhi.core.util.config.ConfigReader;
@@ -37,7 +35,7 @@ public class NotificationSink extends Sink{
     private NotificationUtils mNotificationUtils;
     @Override
     public Class[] getSupportedInputEventClasses() {
-        return new Class[]{Event[].class, Event.class};
+        return new Class[]{Map.class};
     }
 
     @Override
@@ -107,7 +105,6 @@ class NotificationUtils extends ContextWrapper {
 
     public NotificationUtils(Context base) {
         super(base);
-        createChannels();
     }
 
     @TargetApi(Build.VERSION_CODES.O)
@@ -132,6 +129,7 @@ class NotificationUtils extends ContextWrapper {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public Notification.Builder getSiddhiChannelNotification(String title, String body) {
+        createChannels();
         return new Notification.Builder(getApplicationContext(), SIDDHI_CHANNEL_ID)
                 .setContentTitle(title)
                 .setContentText(body)

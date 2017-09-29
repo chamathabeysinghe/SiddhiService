@@ -5,10 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+
 import org.wso2.siddhi.annotation.Example;
 import org.wso2.siddhi.annotation.Extension;
 import org.wso2.siddhi.core.config.SiddhiAppContext;
-import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.core.exception.ConnectionUnavailableException;
 import org.wso2.siddhi.core.stream.input.source.Source;
 import org.wso2.siddhi.core.stream.input.source.SourceEventListener;
@@ -17,8 +17,6 @@ import org.wso2.siddhi.core.util.transport.OptionHolder;
 import org.wso2.siddhi.query.api.definition.StreamDefinition;
 import org.wso2.siddhiandroidlibrary.SiddhiAppService;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -110,10 +108,6 @@ public class BroadcastReceiverSource extends Source {
                     }
                 }
                 sourceEventListener.onEvent(results,null);
-
-
-
-
             }
         }
     }

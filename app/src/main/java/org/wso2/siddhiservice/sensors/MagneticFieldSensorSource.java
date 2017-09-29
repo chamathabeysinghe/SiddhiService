@@ -61,7 +61,6 @@ public class MagneticFieldSensorSource extends AbstractSensorSource {
 
         this.sourceEventListener.onEvent(output,null);
 
-
     }
 
     @Override

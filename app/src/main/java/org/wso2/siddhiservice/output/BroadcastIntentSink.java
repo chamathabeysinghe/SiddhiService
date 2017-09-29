@@ -24,7 +24,6 @@ import android.util.Log;
 import org.wso2.siddhi.annotation.Example;
 import org.wso2.siddhi.annotation.Extension;
 import org.wso2.siddhi.core.config.SiddhiAppContext;
-import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.core.exception.ConnectionUnavailableException;
 import org.wso2.siddhi.core.stream.output.sink.Sink;
 import org.wso2.siddhi.core.util.config.ConfigReader;
@@ -50,7 +49,7 @@ public class BroadcastIntentSink extends Sink{
 
     @Override
     public Class[] getSupportedInputEventClasses() {
-        return new Class[]{Event[].class, Event.class};
+        return new Class[]{Map.class};
     }
 
     @Override
@@ -61,7 +60,7 @@ public class BroadcastIntentSink extends Sink{
     @Override
     protected void init(StreamDefinition streamDefinition, OptionHolder optionHolder, ConfigReader configReader, SiddhiAppContext siddhiAppContext) {
         context= SiddhiAppService.instance;
-        identifier=optionHolder.validateAndGetStaticValue(BROADCAST_FILTER_IDENTIFIER,"");
+        identifier=optionHolder.validateAndGetStaticValue(BROADCAST_FILTER_IDENTIFIER);
     }
 
     @Override

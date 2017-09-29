@@ -62,6 +62,7 @@ public class RotationVectorSensorSource extends AbstractSensorSource {
         output.put("valueX",event.values[0]);
         output.put("valueY",event.values[1]);
         output.put("valueZ",event.values[2]);
+        output.put("valueScalar",event.values[3]);
 
         this.sourceEventListener.onEvent(output,null);
 

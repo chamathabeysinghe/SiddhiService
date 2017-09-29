@@ -16,7 +16,7 @@ import java.util.Map;
 @Extension(
         name = "accelerometer",
         namespace="source",
-        description = "Get events from the light sensor",
+        description = "Get events from the accelerometer sensor",
         examples = @Example(description = "TBD",syntax = "TBD")
 )
 public class AccelerometerSensorSource extends AbstractSensorSource {
