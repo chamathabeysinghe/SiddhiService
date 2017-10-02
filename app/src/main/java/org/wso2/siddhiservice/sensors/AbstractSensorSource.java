@@ -24,53 +24,63 @@ import android.hardware.SensorManager;
 import android.util.Log;
 
 import org.wso2.siddhi.core.config.SiddhiAppContext;
-import org.wso2.siddhi.core.event.Event;
 import org.wso2.siddhi.core.exception.ConnectionUnavailableException;
 import org.wso2.siddhi.core.stream.input.source.Source;
 import org.wso2.siddhi.core.stream.input.source.SourceEventListener;
 import org.wso2.siddhi.core.util.config.ConfigReader;
 import org.wso2.siddhi.core.util.transport.OptionHolder;
-import org.wso2.siddhi.query.api.definition.StreamDefinition;
 import org.wso2.siddhiandroidlibrary.SiddhiAppService;
 
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 public abstract class AbstractSensorSource extends Source implements SensorEventListener{
 
-    protected String CONTEXT="context";
     protected SourceEventListener sourceEventListener;
-    protected StreamDefinition streamDefinition;
-    protected OptionHolder optionHolder;
-    protected String context;
-
     protected SensorManager sensorManager;
     protected Sensor sensor;
+    protected Long pollingInterval = 0L;
+    protected Timer timer;
+    protected TimerTask timerTask;
+
+    protected Map<String, Object> latestInput;
 
     @Override
     public void init(SourceEventListener sourceEventListener, OptionHolder optionHolder, String[] strings, ConfigReader configReader, SiddhiAppContext siddhiAppContext) {
-        this.sourceEventListener=sourceEventListener;
-        context=optionHolder.validateAndGetStaticValue(CONTEXT,
-                siddhiAppContext.getName()+"/"+sourceEventListener.getStreamDefinition().getId());
-        streamDefinition=StreamDefinition.id(context);
-        streamDefinition.getAttributeList().addAll(sourceEventListener.getStreamDefinition().getAttributeList());
-        this.optionHolder=optionHolder;
-        sensorManager= (SensorManager) (SiddhiAppService.instance.getSystemService(Context.SENSOR_SERVICE));
+        this.sourceEventListener = sourceEventListener;
+        sensorManager = (SensorManager) (SiddhiAppService.instance.getSystemService(Context.SENSOR_SERVICE));
+        this.pollingInterval = Long.valueOf(optionHolder.validateAndGetStaticValue("polling.interval", "0"));
+
+        if (this.pollingInterval != 0) {
+            this.timer = new Timer();
+            this.timerTask = new TimerTask() {
+                @Override
+                public void run() {
+                    postUpdates();
+                }
+            };
+        }
 
     }
 
     @Override
     public Class[] getOutputEventClasses() {
-        return new Class[0];
+        return new Class[]{};
     }
 
     @Override
     public void connect(Source.ConnectionCallback connectionCallback) throws ConnectionUnavailableException {
-        if(sensor==null){
-            Log.e("Sensor Error","Android sensor is not initialized in the Source.Sensor might be not supported in the device. Stream : "+sourceEventListener.getStreamDefinition().getId());
-            throw new ConnectionUnavailableException("Android sensor is not initialized in the Source.Sensor might be not supported in the device. Stream : "+sourceEventListener.getStreamDefinition().getId());
+
+        if (sensor == null) {
+            Log.e("Sensor Error", "Android sensor is not initialized in the Source.Sensor might be not supported in the device. Stream : " + sourceEventListener.getStreamDefinition().getId());
+            throw new ConnectionUnavailableException("Android sensor is not initialized in the Source.Sensor might be not supported in the device. Stream : " + sourceEventListener.getStreamDefinition().getId());
         }
-        sensorManager.registerListener(this,sensor,SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL);
+        if (pollingInterval != 0) {
+            this.timer.schedule(timerTask, 0, pollingInterval);
+        }
     }
 
     @Override
@@ -80,7 +90,8 @@ public abstract class AbstractSensorSource extends Source implements SensorEvent
 
     @Override
     public void destroy() {
-        sensorManager=null;
+        sensorManager = null;
+        sensor = null;
     }
 
     @Override
@@ -90,7 +101,7 @@ public abstract class AbstractSensorSource extends Source implements SensorEvent
 
     @Override
     public void resume() {
-        sensorManager.registerListener(this,sensor,SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     @Override
@@ -101,6 +112,14 @@ public abstract class AbstractSensorSource extends Source implements SensorEvent
     @Override
     public void restoreState(Map<String, Object> map) {
 
+    }
+
+    private void postUpdates() {
+        if (latestInput == null) {
+            Log.d("Proximity Source", "No proximity sensor input at the moment.Polling chance is missed. ");
+            return;
+        }
+        this.sourceEventListener.onEvent(this.latestInput, null);
     }
 
 }

@@ -105,6 +105,8 @@ public class LocationSource extends Source implements LocationListener{
         output.put("latitude",location.getLatitude());
         output.put("longitude",location.getLongitude());
         output.put("altitude",location.getAltitude());
+        output.put("bearing",location.getBearing());
+        output.put("speed",location.getSpeed());
         output.put("accuracy",location.getAccuracy());
         sourceEventListener.onEvent(output,null);
     }
