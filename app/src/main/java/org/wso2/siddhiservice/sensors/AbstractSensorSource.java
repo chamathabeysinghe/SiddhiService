@@ -86,6 +86,7 @@ public abstract class AbstractSensorSource extends Source implements SensorEvent
     @Override
     public void disconnect() {
         sensorManager.unregisterListener(this);
+        this.timer.cancel();
     }
 
     @Override
@@ -114,9 +115,9 @@ public abstract class AbstractSensorSource extends Source implements SensorEvent
 
     }
 
-    private void postUpdates() {
+    protected void postUpdates() {
         if (latestInput == null) {
-            Log.d("Proximity Source", "No proximity sensor input at the moment.Polling chance is missed. ");
+            Log.d("Sensor Source", "No  sensor input at the moment.Polling chance is missed. ");
             return;
         }
         this.sourceEventListener.onEvent(this.latestInput, null);

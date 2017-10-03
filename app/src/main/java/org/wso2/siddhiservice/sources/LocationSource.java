@@ -11,46 +11,76 @@ import android.util.Log;
 
 import org.wso2.siddhi.annotation.Example;
 import org.wso2.siddhi.annotation.Extension;
+import org.wso2.siddhi.annotation.Parameter;
+import org.wso2.siddhi.annotation.util.DataType;
 import org.wso2.siddhi.core.config.SiddhiAppContext;
 import org.wso2.siddhi.core.exception.ConnectionUnavailableException;
 import org.wso2.siddhi.core.stream.input.source.Source;
 import org.wso2.siddhi.core.stream.input.source.SourceEventListener;
 import org.wso2.siddhi.core.util.config.ConfigReader;
 import org.wso2.siddhi.core.util.transport.OptionHolder;
-import org.wso2.siddhi.query.api.definition.StreamDefinition;
 import org.wso2.siddhiandroidlibrary.SiddhiAppService;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 @Extension(
-        name = "location",
-        namespace="source",
-        description = "Get events from a intent broadcast",
-        examples = @Example(description = "TBD",syntax = "TBD")
+        name = "android-location",
+        namespace = "source",
+        description = "Location Source gets events from location sensor of android device. ",
+        parameters = {
+                @Parameter(
+                        name = "polling.interval",
+                        description = " polling.interval is the time between two events in milliseconds. " +
+                                "If a polling interval is specified events are generated only at " +
+                                "that frequency even if the sensor value changes.",
+                        defaultValue = "0L",
+                        optional = true,
+                        type = {DataType.LONG}
+                )
+        },
+        examples = {
+                @Example(
+                        syntax = "@source(type = 'android-location' ,@map(type='keyvalue'))\n" +
+                                "define stream locationStream(sensor string, location float, accuracy int)",
+                        description = "This will consume events from Location sensor transport " +
+                                "when the sensor value is changed.\n"
+                ),
+                @Example(
+                        syntax = "@source(type = 'android-location' ,polling.interval = 100," +
+                                "@map(type='keyvalue'))\n" +
+                                "define stream locationStream(sensor string, location float, accuracy int)",
+                        description = "This will consume events from Location sensor transport " +
+                                "periodically with a interval of 100 milliseconds.\n"
+                )
+        }
 )
 public class LocationSource extends Source implements LocationListener{
 
-    private String CONTEXT="context";
     private SourceEventListener sourceEventListener;
-    private StreamDefinition streamDefinition;
-    private OptionHolder optionHolder;
-    private String context;
-
+    protected Long pollingInterval = 0L;
+    protected Timer timer;
+    protected TimerTask timerTask;
     private LocationManager locationManager;
-
+    protected Map<String, Object> latestInput;
     @Override
     public void init(SourceEventListener sourceEventListener, OptionHolder optionHolder, String[] strings, ConfigReader configReader, SiddhiAppContext siddhiAppContext) {
 
         this.sourceEventListener=sourceEventListener;
-        context=optionHolder.validateAndGetStaticValue(CONTEXT,
-                siddhiAppContext.getName()+"/"+sourceEventListener.getStreamDefinition().getId());
-        streamDefinition=StreamDefinition.id(context);
-        streamDefinition.getAttributeList().addAll(sourceEventListener.getStreamDefinition().getAttributeList());
-        this.optionHolder=optionHolder;
+        this.locationManager = (LocationManager) SiddhiAppService.instance.getSystemService(Context.LOCATION_SERVICE);
+        this.pollingInterval = Long.valueOf(optionHolder.validateAndGetStaticValue("polling.interval", "0"));
 
-        locationManager = (LocationManager) SiddhiAppService.instance.getSystemService(Context.LOCATION_SERVICE);
-
+        if (this.pollingInterval != 0) {
+            this.timer = new Timer();
+            this.timerTask = new TimerTask() {
+                @Override
+                public void run() {
+                    postUpdates();
+                }
+            };
+        }
     }
 
     @Override
@@ -65,18 +95,20 @@ public class LocationSource extends Source implements LocationListener{
             Log.e("Permission","Requires Permission");
         }
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10, 0, this);
-
+        if (pollingInterval != 0) {
+            this.timer.schedule(timerTask, 0, pollingInterval);
+        }
     }
 
     @Override
     public void disconnect() {
         locationManager.removeUpdates(this);
-
+        timer.cancel();
     }
 
     @Override
     public void destroy() {
-
+        locationManager = null;
     }
 
     @Override
@@ -108,7 +140,11 @@ public class LocationSource extends Source implements LocationListener{
         output.put("bearing",location.getBearing());
         output.put("speed",location.getSpeed());
         output.put("accuracy",location.getAccuracy());
-        sourceEventListener.onEvent(output,null);
+
+        if (this.pollingInterval == 0L && (output == latestInput)) {
+            this.sourceEventListener.onEvent(output, null);
+        }
+        this.latestInput = output;
     }
 
     @Override
@@ -124,5 +160,13 @@ public class LocationSource extends Source implements LocationListener{
     @Override
     public void onProviderDisabled(String s) {
 
+    }
+
+    private void postUpdates() {
+        if (latestInput == null) {
+            Log.d("Sensor Source", "No  sensor input at the moment.Polling chance is missed. ");
+            return;
+        }
+        this.sourceEventListener.onEvent(this.latestInput, null);
     }
 }

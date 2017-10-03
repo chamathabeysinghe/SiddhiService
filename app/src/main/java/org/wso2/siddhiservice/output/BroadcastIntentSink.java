@@ -19,10 +19,11 @@ package org.wso2.siddhiservice.output;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
 import org.wso2.siddhi.annotation.Example;
 import org.wso2.siddhi.annotation.Extension;
+import org.wso2.siddhi.annotation.Parameter;
+import org.wso2.siddhi.annotation.util.DataType;
 import org.wso2.siddhi.core.config.SiddhiAppContext;
 import org.wso2.siddhi.core.exception.ConnectionUnavailableException;
 import org.wso2.siddhi.core.stream.output.sink.Sink;
@@ -36,10 +37,40 @@ import java.util.Map;
 
 
 @Extension(
-    name = "broadcast",
+    name = "android-broadcast",
     namespace = "sink",
-    description = "Broadcast android intents",
-    examples = @Example(description = "TBD",syntax = "TBD")
+    description = "This will publish events arriving to the stream through android broadcasts " +
+            "which has attribute values as extras.",
+    parameters = {
+            @Parameter(
+                    name = "identifier",
+                    description = "Identifier is a mandatory parameter which represents the " +
+                            "actions of the broadcast. This action is used by broadcast " +
+                            "listeners to identify the intent. \n",
+                    type = {DataType.STRING}
+            )
+    },
+    examples = {
+            @Example(
+                    syntax = "@sink(type = 'android-broadcast' , identifier = 'SIDDHI_BROADCAST'," +
+                            "@map(type='keyvalue',@payload(message = " +
+                            "'Value is {{value}} taken from {{sensor}}')))\n" +
+                            "define stream fooStream(sensor string, value float, accuracy float)",
+                    description = "This will publish events arriving for fooStream as Intents" +
+                            " which has key 'message' and value 'Value is...' string as extra " +
+                            "information in the intent. Intent Listeners should listen for " +
+                            "SIDDHI_BROADCAST action to receive this intent."
+            ),
+            @Example(
+                    syntax = "@sink(type = 'android-broadcast' , identifier = 'SIDDHI_BROADCAST'," +
+                            "@map(type='keyvalue'))\n" +
+                            "define stream fooStream(sensor string, value float, accuracy float)",
+                    description = "This will publish events arriving for fooStream as Intents" +
+                            " which has keys 'sensor','value','accuracy' and respective values as extra " +
+                            "information in the intent. Intent Listeners should listen for " +
+                            "SIDDHI_BROADCAST action to receive this intent."
+            )
+    }
 )
 public class BroadcastIntentSink extends Sink{
     private static final String BROADCAST_FILTER_IDENTIFIER="identifier";
@@ -47,6 +78,11 @@ public class BroadcastIntentSink extends Sink{
 
     private Context context;
 
+    @Override
+    protected void init(StreamDefinition streamDefinition, OptionHolder optionHolder, ConfigReader configReader, SiddhiAppContext siddhiAppContext) {
+        context= SiddhiAppService.instance;
+        identifier=optionHolder.validateAndGetStaticValue(BROADCAST_FILTER_IDENTIFIER);
+    }
     @Override
     public Class[] getSupportedInputEventClasses() {
         return new Class[]{Map.class};
@@ -58,17 +94,37 @@ public class BroadcastIntentSink extends Sink{
     }
 
     @Override
-    protected void init(StreamDefinition streamDefinition, OptionHolder optionHolder, ConfigReader configReader, SiddhiAppContext siddhiAppContext) {
-        context= SiddhiAppService.instance;
-        identifier=optionHolder.validateAndGetStaticValue(BROADCAST_FILTER_IDENTIFIER);
-    }
-
-    @Override
     public void publish(Object o, DynamicOptions dynamicOptions) throws ConnectionUnavailableException {
         Intent in = new Intent(identifier);
-        in.putExtra("events",o.toString());  //key:payload & event object
+
+        Map<String,Object> event = (Map<String, Object>) o;
+        for(String key:event.keySet()){
+            Object value = event.get(key);
+            if(value instanceof Integer){
+                in.putExtra(key,(int) value);
+            }
+            else if(value instanceof Float){
+                in.putExtra(key,(float)value);
+            }
+            else if(value instanceof Double){
+                in.putExtra(key,(double) value);
+            }
+            else if(value instanceof Boolean){
+                in.putExtra(key,(boolean)value);
+            }
+            else if(value instanceof Long){
+                in.putExtra(key,(long)value);
+            }
+            else if(value instanceof String){
+                in.putExtra(key,value.toString());
+            }
+            else{
+                in.putExtra(key,value.toString());
+            }
+
+        }
+
         context.sendBroadcast(in);
-        Log.e("Events",o.toString());
     }
 
     @Override
