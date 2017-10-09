@@ -66,7 +66,8 @@ import java.util.Map;
                             "@map(type='keyvalue'))\n" +
                             "define stream fooStream(sensor string, value float, accuracy float)",
                     description = "This will publish events arriving for fooStream as Intents" +
-                            " which has keys 'sensor','value','accuracy' and respective values as extra " +
+                            " which has keys 'sensor','value','accuracy' and respective " +
+                            "values as extra " +
                             "information in the intent. Intent Listeners should listen for " +
                             "SIDDHI_BROADCAST action to receive this intent."
             )
@@ -79,7 +80,8 @@ public class BroadcastIntentSink extends Sink{
     private Context context;
 
     @Override
-    protected void init(StreamDefinition streamDefinition, OptionHolder optionHolder, ConfigReader configReader, SiddhiAppContext siddhiAppContext) {
+    protected void init(StreamDefinition streamDefinition, OptionHolder optionHolder,
+                        ConfigReader configReader, SiddhiAppContext siddhiAppContext) {
         context= SiddhiAppService.instance;
         identifier=optionHolder.validateAndGetStaticValue(BROADCAST_FILTER_IDENTIFIER);
     }
@@ -94,7 +96,8 @@ public class BroadcastIntentSink extends Sink{
     }
 
     @Override
-    public void publish(Object o, DynamicOptions dynamicOptions) throws ConnectionUnavailableException {
+    public void publish(Object o, DynamicOptions dynamicOptions)
+            throws ConnectionUnavailableException {
         Intent in = new Intent(identifier);
 
         Map<String,Object> event = (Map<String, Object>) o;

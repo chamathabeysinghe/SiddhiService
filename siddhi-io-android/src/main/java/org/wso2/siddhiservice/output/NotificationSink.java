@@ -1,14 +1,11 @@
 package org.wso2.siddhiservice.output;
 
-import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.graphics.Color;
 import android.os.Build;
-import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
 
 import org.wso2.siddhi.annotation.Example;
@@ -24,19 +21,21 @@ import org.wso2.siddhi.core.util.transport.OptionHolder;
 import org.wso2.siddhi.query.api.definition.StreamDefinition;
 import org.wso2.siddhiandroidlibrary.SiddhiAppService;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Extension(
         name = "android-notification",
         namespace = "sink",
-        description = "This will publish events arriving to the stream through android notifications",
+        description = "This will publish events arriving to the stream through android " +
+                "notifications",
         parameters = {
                 @Parameter(
                         name = "multiple.notifications",
                         description = "If multipleNotifications is set as true new notification " +
                                 "will be published for every new event arriving at the stream. " +
-                                "Otherwise it will override the previously published notification " +
-                                "if it is not cleared.",
+                                "Otherwise it will override the previously published " +
+                                "notification if it is not cleared.",
                         optional = true,
                         type = {DataType.BOOL},
                         defaultValue = "false"
@@ -58,16 +57,27 @@ import java.util.Map;
         },
         examples = {
                 @Example(
-                        syntax = "@sink(type = 'android-notification',title = ‘Example’, icon = ‘R.drawable.notificationIcon’, multiple.notifications = ‘true’,@map(type='keyvalue',@payload(message = 'Value is {{value}} taken from {{sensor}}')))\n" +
-                                "define stream fooStream(sensor string, value float, accuracy float)",
-                        description = "This will publish events arrive to fooStream through android notifications which has title 'Example'. For each event it will send a new notification instead of updating the previous one"
+                        syntax = "@sink(type = 'android-notification',title = ‘Example’, " +
+                                "icon = ‘R.drawable.notificationIcon’, " +
+                                "multiple.notifications = ‘true’,@map(type='keyvalue'," +
+                                "@payload(message = 'Value is {{value}} taken from {{sensor}}')))\n"
+                                +"define stream fooStream(sensor string, value float," +
+                                " accuracy float)",
+                        description = "This will publish events arrive to fooStream through " +
+                                "android notifications which has title 'Example'. For each " +
+                                "event it will send a new notification instead of updating " +
+                                "the previous one"
                 )
         }
 )
 
 public class NotificationSink extends Sink{
 
-    private NotificationUtils mNotificationUtils;
+
+    private NotificationManager mManager;
+    public static final String SIDDHI_CHANNEL_ID = "org.wso2.extension.io.android.NOTIFICATION";
+    public static final String SIDDHI_CHANNEL_NAME = "SIDDHI_NOTIFICATION_CHANNEL";
+
     private String MULTIPLE_NOTIFICATION_STRING = "multiple.notifications";
     private String TITLE_STRING = "title";
     private String NOTIFICATION_ICON_STRING = "icon";
@@ -79,11 +89,25 @@ public class NotificationSink extends Sink{
     private int icon = SiddhiAppService.getAppIcon();
 
     @Override
-    protected void init(StreamDefinition streamDefinition, OptionHolder optionHolder, ConfigReader configReader, SiddhiAppContext siddhiAppContext) {
-        multipleNotifications=Boolean.parseBoolean(optionHolder.validateAndGetStaticValue(MULTIPLE_NOTIFICATION_STRING,"false"));
+    protected void init(StreamDefinition streamDefinition, OptionHolder optionHolder,
+                        ConfigReader configReader, SiddhiAppContext siddhiAppContext) {
+        multipleNotifications=Boolean.parseBoolean(optionHolder.validateAndGetStaticValue(
+                MULTIPLE_NOTIFICATION_STRING,"false"));
         title = optionHolder.validateAndGetStaticValue(TITLE_STRING,"Siddhi Platform");
-        icon = Integer.parseInt(optionHolder.validateAndGetStaticValue(NOTIFICATION_ICON_STRING,String.valueOf(SiddhiAppService.getAppIcon())));
-        mNotificationUtils = new NotificationUtils(SiddhiAppService.instance);
+        icon = Integer.parseInt(optionHolder.validateAndGetStaticValue(NOTIFICATION_ICON_STRING,
+                String.valueOf(SiddhiAppService.getAppIcon())));
+        mManager = (NotificationManager) SiddhiAppService.instance.getSystemService(
+                Context.NOTIFICATION_SERVICE);
+
+        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.O){
+            NotificationChannel androidChannel = new NotificationChannel(SIDDHI_CHANNEL_ID,
+                    SIDDHI_CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
+            androidChannel.enableLights(true);
+            androidChannel.enableVibration(true);
+            androidChannel.setLightColor(Color.GREEN);
+            androidChannel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+            mManager.createNotificationChannel(androidChannel);
+        }
     }
 
     @Override
@@ -97,18 +121,30 @@ public class NotificationSink extends Sink{
     }
 
     @Override
-    public void publish(Object o, DynamicOptions dynamicOptions) throws ConnectionUnavailableException {
+    public void publish(Object o, DynamicOptions dynamicOptions)
+            throws ConnectionUnavailableException {
+        HashMap<String,Object> mapInput = (HashMap<String, Object>) o;
+
+        StringBuilder sb = new StringBuilder();
+        for(String key:mapInput.keySet()){
+            sb.append(key).append(" : ").append(mapInput.get(key)).append("\n");
+        }
         if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.O){
-            Notification.Builder nb = mNotificationUtils.getSiddhiChannelNotification(o.toString());
-            mNotificationUtils.getManager().notify(this.notificationId,nb.build());
+            Notification.Builder nb = new Notification
+                    .Builder(SiddhiAppService.instance, SIDDHI_CHANNEL_ID)
+                    .setContentTitle(title)
+                    .setSmallIcon(icon)
+                    .setStyle(new Notification.BigTextStyle().bigText(sb.toString()))
+                    .setAutoCancel(true);
+            mManager.notify(this.notificationId,nb.build());
         }
         else{
             Notification n  = new NotificationCompat.Builder(SiddhiAppService.instance)
                     .setContentTitle(title)
-                    .setContentText(o.toString())
+                    .setStyle(new NotificationCompat.BigTextStyle().bigText(sb.toString()))
                     .setSmallIcon(icon)
                     .build();
-            mNotificationUtils.getManager().notify(this.notificationId, n);
+            mManager.notify(this.notificationId, n);
         }
         if(multipleNotifications){
             this.notificationId+=1;
@@ -127,7 +163,7 @@ public class NotificationSink extends Sink{
 
     @Override
     public void destroy() {
-        this.mNotificationUtils = null;
+        this.mManager = null;
     }
 
     @Override
@@ -139,46 +175,6 @@ public class NotificationSink extends Sink{
     @Override
     public void restoreState(Map<String, Object> map) {
 
-    }
-
-    private class NotificationUtils extends ContextWrapper {
-
-        private NotificationManager mManager;
-        public static final String SIDDHI_CHANNEL_ID = "org.wso2.SIDDHI";
-        public static final String SIDDHI_CHANNEL_NAME = "SIDDHI CHANNEL";
-
-        public NotificationUtils(Context base) {
-            super(base);
-        }
-
-        @TargetApi(Build.VERSION_CODES.O)
-        private void createChannels() {
-
-            NotificationChannel androidChannel = new NotificationChannel(SIDDHI_CHANNEL_ID,SIDDHI_CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
-            androidChannel.enableLights(true);
-            androidChannel.enableVibration(true);
-            androidChannel.setLightColor(Color.GREEN);
-            androidChannel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
-            getManager().createNotificationChannel(androidChannel);
-
-        }
-
-        public NotificationManager getManager() {
-            if (mManager == null) {
-                mManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            }
-            return mManager;
-        }
-
-        @RequiresApi(api = Build.VERSION_CODES.O)
-        public Notification.Builder getSiddhiChannelNotification(String body) {
-            createChannels();
-            return new Notification.Builder(getApplicationContext(), SIDDHI_CHANNEL_ID)
-                    .setContentTitle(title)
-                    .setContentText(body)
-                    .setSmallIcon(icon)
-                    .setAutoCancel(true);
-        }
     }
 
 }

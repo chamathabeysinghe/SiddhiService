@@ -48,10 +48,14 @@ public abstract class AbstractSensorSource extends Source implements SensorEvent
     protected Map<String, Object> latestInput;
 
     @Override
-    public void init(SourceEventListener sourceEventListener, OptionHolder optionHolder, String[] strings, ConfigReader configReader, SiddhiAppContext siddhiAppContext) {
+    public void init(SourceEventListener sourceEventListener, OptionHolder optionHolder,
+                     String[] strings, ConfigReader configReader,
+                     SiddhiAppContext siddhiAppContext) {
         this.sourceEventListener = sourceEventListener;
-        sensorManager = (SensorManager) (SiddhiAppService.instance.getSystemService(Context.SENSOR_SERVICE));
-        this.pollingInterval = Long.valueOf(optionHolder.validateAndGetStaticValue("polling.interval", "0"));
+        sensorManager = (SensorManager) (SiddhiAppService.instance.getSystemService(
+                Context.SENSOR_SERVICE));
+        this.pollingInterval = Long.valueOf(optionHolder.validateAndGetStaticValue(
+                "polling.interval", "0"));
 
         if (this.pollingInterval != 0) {
             this.timer = new Timer();
@@ -71,11 +75,16 @@ public abstract class AbstractSensorSource extends Source implements SensorEvent
     }
 
     @Override
-    public void connect(Source.ConnectionCallback connectionCallback) throws ConnectionUnavailableException {
+    public void connect(Source.ConnectionCallback connectionCallback)
+            throws ConnectionUnavailableException {
 
         if (sensor == null) {
-            Log.e("Sensor Error", "Android sensor is not initialized in the Source.Sensor might be not supported in the device. Stream : " + sourceEventListener.getStreamDefinition().getId());
-            throw new ConnectionUnavailableException("Android sensor is not initialized in the Source.Sensor might be not supported in the device. Stream : " + sourceEventListener.getStreamDefinition().getId());
+            Log.e("Sensor Error", "Android sensor is not initialized in the Source." +
+                    "Sensor might be not supported in the device. Stream : "
+                    + sourceEventListener.getStreamDefinition().getId());
+            throw new ConnectionUnavailableException("Android sensor is not initialized in the " +
+                    "Source.Sensor might be not supported in the device. Stream : "
+                    + sourceEventListener.getStreamDefinition().getId());
         }
         sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL);
         if (pollingInterval != 0) {
@@ -117,7 +126,8 @@ public abstract class AbstractSensorSource extends Source implements SensorEvent
 
     protected void postUpdates() {
         if (latestInput == null) {
-            Log.d("Sensor Source", "No  sensor input at the moment.Polling chance is missed. ");
+            Log.d("Sensor Source", "No  sensor input at the moment.Polling " +
+                    "chance is missed. ");
             return;
         }
         this.sourceEventListener.onEvent(this.latestInput, null);

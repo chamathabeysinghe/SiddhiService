@@ -36,11 +36,13 @@ import java.util.Map;
 @Extension(
         name = "android-accelerometer",
         namespace = "source",
-        description = "Accelerometer Source gets events from accelerometer sensor of android device. ",
+        description = "Accelerometer Source gets events from accelerometer sensor of " +
+                "android device. ",
         parameters = {
                 @Parameter(
                         name = "polling.interval",
-                        description = " polling.interval is the time between two events in milliseconds. " +
+                        description = " polling.interval is the time between two events in " +
+                                "milliseconds. " +
                                 "If a polling interval is specified events are generated only at " +
                                 "that frequency even if the sensor value changes.",
                         defaultValue = "0L",
@@ -51,15 +53,18 @@ import java.util.Map;
         examples = {
                 @Example(
                         syntax = "@source(type = 'android-accelerometer' ,@map(type='keyvalue'))\n" +
-                                "define stream accelerometerStream(sensor string, accelerometerX float, accuracy int)",
-                        description = "This will consume events from Accelerometer sensor transport " +
-                                "when the sensor value is changed.\n"
+                                "define stream accelerometerStream(sensor string, " +
+                                "accelerometerX float, accuracy int)",
+                        description = "This will consume events from Accelerometer " +
+                                "sensor transport when the sensor value is changed.\n"
                 ),
                 @Example(
                         syntax = "@source(type = 'android-accelerometer' ,polling.interval = 100," +
                                 "@map(type='keyvalue'))\n" +
-                                "define stream accelerometerStream(sensor string, accelerometerX float, accuracy int)",
-                        description = "This will consume events from Accelerometer sensor transport " +
+                                "define stream accelerometerStream(sensor string, " +
+                                "accelerometerX float, accuracy int)",
+                        description = "This will consume events from Accelerometer " +
+                                "sensor transport " +
                                 "periodically with a interval of 100 milliseconds.\n"
                 )
         }
@@ -67,13 +72,17 @@ import java.util.Map;
 public class AccelerometerSensorSource extends AbstractSensorSource {
 
     @Override
-    public void init(SourceEventListener sourceEventListener, OptionHolder optionHolder, String[] strings, ConfigReader configReader, SiddhiAppContext siddhiAppContext) {
+    public void init(SourceEventListener sourceEventListener, OptionHolder optionHolder,
+                     String[] strings, ConfigReader configReader,
+                     SiddhiAppContext siddhiAppContext) {
         super.init(sourceEventListener,optionHolder,strings,configReader,siddhiAppContext);
 
         sensor=sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         if (sensor == null) {
-            Log.e("Siddhi Source Error", "Accelerometer Sensor is not supported in the device. Stream " + sourceEventListener.getStreamDefinition().getId());
-            throw new SiddhiAppCreationException("Accelerometer Sensor is not supported in the device. Stream " + sourceEventListener.getStreamDefinition().getId());
+            Log.e("Siddhi Source Error", "Accelerometer Sensor is not supported in " +
+                    "the device. Stream " + sourceEventListener.getStreamDefinition().getId());
+            throw new SiddhiAppCreationException("Accelerometer Sensor is not supported in " +
+                    "the device. Stream " + sourceEventListener.getStreamDefinition().getId());
         }
     }
 
